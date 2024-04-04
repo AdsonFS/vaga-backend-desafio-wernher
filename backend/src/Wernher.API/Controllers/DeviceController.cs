@@ -1,47 +1,62 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Wernher.API.DTO;
+using Wernher.Domain.Models;
+using Wernher.Domain.Repositories;
 
 namespace Wernher.API.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class DeviceController : ControllerBase
 {
+    private IRepository<Device> _deviceRepository;
 
-    public DeviceController() { }
+    public DeviceController(IRepository<Device> deviceRepository)
+    {
+        _deviceRepository = deviceRepository;
+    }
 
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Device>>> GetDevices()
+    {
+        return Ok(await _deviceRepository.GetAllAsync());
+    }
     [HttpPost]
-    public async Task<ActionResult> PostDevice(DeviceDto device, [FromServices] IValidator<DeviceDto> validator)
+    public async Task<ActionResult<Device>> PostDevice(DeviceDto device, [FromServices] IValidator<DeviceDto> validator)
     {
         var validationResult = await validator.ValidateAsync(device);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
-        return Ok("Device created successfully!");
+        Guid id = (await _deviceRepository.AddAsync(device.ToModel())).Id;
+
+
+        return CreatedAtAction(nameof(GetDevice), new { id }, device);
+
     }
 
-    [HttpGet]
-    public async Task<ActionResult> GetDevices()
-    {
-        return Ok();
-    }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult> GetDevice(Guid id)
+    public async Task<ActionResult<Device>> GetDevice(Guid id)
     {
-        return Ok();
+        var device = await _deviceRepository.GetByIdAsync(id);
+        if (device == null) return NotFound();
+        return Ok(device);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutDevice(Guid id)
+    public async Task<IActionResult> PutDevice(Guid id, [FromBody] DeviceDto deviceDto, [FromServices] IValidator<DeviceDto> validator)
     {
+
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteDevice(Guid id)
     {
-
-        return NoContent();
+        var device = await _deviceRepository.GetByIdAsync(id);
+        if (device == null) return BadRequest();
+        await _deviceRepository.DeleteAsync(device);
+        return Ok();
     }
 
 }

@@ -295,3 +295,4 @@ __pycache__/
 go.work
 
 # End of https://www.toptal.com/developers/gitignore/api/aspnetcore,go
+Migrations/
