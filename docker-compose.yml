@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  db:
+    container_name: db
+    image: postgres:16.2
+    environment:
+      - POSTGRES_USER=adson
+      - POSTGRES_PASSWORD=7dFxSmYqX+Xq*gdC
+      - POSTGRES_DB=WernherDB
+    ports:
+      - 5432:5432
+    #volumes:
+    #  - ./db/data:/var/lib/postgresql/data
+    networks:
+      - wernher-network
+    restart: unless-stopped
+
+networks:
+  wernher-network:
+    driver: bridge
