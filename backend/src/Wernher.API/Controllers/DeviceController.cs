@@ -1,7 +1,8 @@
 using System.Runtime.CompilerServices;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Wernher.API.ResponseDTO;
+using Wernher.API.DTO;
 using Wernher.Domain.Models;
 using Wernher.Domain.Repositories;
 using Wernher.Domain.Telnet;
@@ -9,14 +10,19 @@ using Wernher.Domain.Telnet;
 namespace Wernher.API.Controllers;
 [Route("[controller]")]
 [ApiController]
+[Authorize]
 public class DeviceController : ControllerBase
 {
     private IDeviceRepository _deviceRepository;
-
     public DeviceController(IDeviceRepository deviceRepository)
     {
         _deviceRepository = deviceRepository;
     }
+    private string GetCustomerId()
+        => User.Claims
+            .Where(c => c.Type == "CustomerId")
+            .Select(x => x.Value).FirstOrDefault()!;
+
 
     [HttpGet("telnet/get_rainfall_intensity")]
     public async Task<ActionResult> Telnet()
@@ -56,9 +62,9 @@ public class DeviceController : ControllerBase
         var validationResult = await validator.ValidateAsync(device);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
+        device.CustomerId = Guid.Parse(GetCustomerId());
         Guid id = (await _deviceRepository.AddAsync(device)).Id;
         return CreatedAtAction(nameof(GetDevice), new { id }, device);
-
     }
 
 
@@ -79,6 +85,8 @@ public class DeviceController : ControllerBase
 
         var device = await _deviceRepository.GetByIdAsync(id);
         if (device == null) return BadRequest();
+
+        if (device.CustomerId.ToString() != GetCustomerId()) return Unauthorized();
 
         await _deviceRepository.UpdateAsync(device, newDevice);
         return Ok();

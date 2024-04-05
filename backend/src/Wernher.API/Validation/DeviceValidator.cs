@@ -1,5 +1,4 @@
 using System.Data;
-using System.Text.RegularExpressions;
 using FluentValidation;
 using Wernher.Domain.Models;
 
@@ -8,7 +7,6 @@ public class DeviceValidator : AbstractValidator<Device>
 {
     public DeviceValidator()
     {
-        RuleFor(x => x.Identifier).NotEmpty();
         RuleFor(x => x.Description).NotEmpty();
         RuleFor(x => x.Manufacturer).NotEmpty().Equal("PredictWeater");
 
