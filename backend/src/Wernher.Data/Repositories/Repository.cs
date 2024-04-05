@@ -35,9 +35,8 @@ public class Repository<TEntity> : IDisposable, IRepository<TEntity> where TEnti
         => await _dbSet
         .FindAsync(id);
 
-    public async Task<List<TEntity>> GetAllAsync()
-        => await _wernherContext.Set<TEntity>()
-            .ToListAsync();
+    public virtual async Task<List<TEntity>> GetAllAsync()
+        => await _dbSet.ToListAsync();
 
 
     public void Dispose()

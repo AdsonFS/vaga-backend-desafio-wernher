@@ -58,10 +58,19 @@ func handleConnection(conn net.Conn) {
 func handleCommand(input string) string {
 	// Remove newline character
 	input = strings.TrimSuffix(input, "\r\n")
+	parts := strings.Split(input, " ")
+	command := parts[0]
 
+	fmt.Printf("Received command: %s\n", input)
 	// Handle different commands
-	switch input {
+	switch command {
 	case "get_rainfall_intensity":
+		if len(parts) == 2 && parts[1] == "zero" {
+			return "The rainfall intensity is: 0.0mm/hr\r\n"
+		}
+		if len(parts) == 2 {
+			return "The rainfall intensity is: -1.0mm/hr\r\n"
+		}
 		return fmt.Sprintf("The rainfall intensity is: %fmm/hr\r\n", rand.Float64())
 	case "time":
 		return fmt.Sprintf("Current time is: %s\r\n", getTime())
