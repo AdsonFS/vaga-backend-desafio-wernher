@@ -1,9 +1,10 @@
+using System.Data;
 using System.Text.RegularExpressions;
 using FluentValidation;
-using Wernher.API.DTO;
+using Wernher.Domain.Models;
 
 namespace Wernher.API.Validation;
-public class DeviceValidator : AbstractValidator<DeviceDto>
+public class DeviceValidator : AbstractValidator<Device>
 {
     public DeviceValidator()
     {

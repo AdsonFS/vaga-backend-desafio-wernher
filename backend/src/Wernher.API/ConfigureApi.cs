@@ -1,6 +1,5 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Wernher.API.DTO;
 using Wernher.API.Validation;
 using Wernher.Data.Context;
 using Wernher.Data.Repositories;
@@ -23,7 +22,7 @@ public static class ConfigureApi
 
         services.AddSwaggerGen();
         services.AddControllers();
-        services.AddScoped<IValidator<DeviceDto>, DeviceValidator>();
+        services.AddScoped<IValidator<Device>, DeviceValidator>();
         services.AddScoped<IRepository<Device>, DeviceRepository>();
         return services;
     }

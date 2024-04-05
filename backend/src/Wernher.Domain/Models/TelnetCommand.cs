@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Wernher.Domain.Models;
 
 public class TelnetCommand : Entity
@@ -8,6 +10,7 @@ public class TelnetCommand : Entity
         Parameters = parameters;
     }
     private TelnetCommand() { }
+    [JsonIgnore]
     public Guid CommandsID { get; }
     public string Command { get; }
     public List<Parameter> Parameters { get; }

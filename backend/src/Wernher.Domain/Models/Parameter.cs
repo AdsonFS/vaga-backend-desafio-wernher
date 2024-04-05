@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Wernher.Domain.Models;
 
 public class Parameter : Entity
@@ -8,6 +10,7 @@ public class Parameter : Entity
         Name = name;
         Description = description;
     }
+    [JsonIgnore]
     public Guid CommandID { get; }
     public string Name { get; }
     public string Description { get; }

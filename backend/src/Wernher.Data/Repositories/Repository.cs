@@ -20,15 +20,15 @@ public class Repository<TEntity> : IDisposable, IRepository<TEntity> where TEnti
         await SaveChanges();
         return entity;
     }
-    public async Task<TEntity> UpdateAsync(TEntity entity)
+    public virtual async Task<TEntity> UpdateAsync(TEntity oldEntity, TEntity newEntity)
     {
-        _dbSet.Entry(entity).State = EntityState.Modified;
+        _dbSet.Update(newEntity);
         await SaveChanges();
-        return entity;
+        return newEntity;
     }
     public async Task<int> DeleteAsync(TEntity entity)
     {
-        _dbSet.Entry(entity).State = EntityState.Deleted;
+        _dbSet.Remove(entity);
         return await SaveChanges();
     }
     public virtual async Task<TEntity?> GetByIdAsync(Guid id)

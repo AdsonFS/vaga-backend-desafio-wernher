@@ -1,8 +1,8 @@
 using FluentValidation;
-using Wernher.API.DTO;
+using Wernher.Domain.Models;
 
 namespace Wernher.API.Validation;
-public class TelnetCommandValidator : AbstractValidator<TelnetCommandDto>
+public class TelnetCommandValidator : AbstractValidator<TelnetCommand>
 {
     public TelnetCommandValidator()
     {

@@ -16,7 +16,8 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.HasMany(d => d.Commands)
             .WithOne()
             .HasForeignKey(c => c.DeviceID)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
@@ -30,10 +31,13 @@ public class CommandDescriptionConfiguration : IEntityTypeConfiguration<Command>
         builder.Property(c => c.Result).IsRequired().HasMaxLength(100);
         builder.Property(c => c.Format).IsRequired().HasMaxLength(100);
 
+
+
         builder.HasOne(cd => cd.TelnetCommand)
             .WithOne()
-            .HasForeignKey<Command>(cd => cd.Id)
-            .IsRequired();
+            .HasForeignKey<TelnetCommand>(cd => cd.CommandsID)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
@@ -47,7 +51,8 @@ public class TelnetCommandConfiguration : IEntityTypeConfiguration<TelnetCommand
         builder.HasMany(tc => tc.Parameters)
             .WithOne()
             .HasForeignKey(p => p.CommandID)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

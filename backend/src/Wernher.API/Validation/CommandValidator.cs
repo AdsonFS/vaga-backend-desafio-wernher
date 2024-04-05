@@ -1,8 +1,8 @@
 using FluentValidation;
-using Wernher.API.DTO;
+using Wernher.Domain.Models;
 
 namespace Wernher.API.Validation;
-public class CommandValidator : AbstractValidator<CommandDto>
+public class CommandValidator : AbstractValidator<Command>
 {
     public CommandValidator()
     {

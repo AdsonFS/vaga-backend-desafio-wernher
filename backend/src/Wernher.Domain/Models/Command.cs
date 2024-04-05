@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Wernher.Domain.Models;
 
 public class Command : Entity
@@ -11,6 +13,7 @@ public class Command : Entity
         Format = format;
     }
     private Command() { }
+    [JsonIgnore]
     public Guid DeviceID { get; init; }
     public string Operation { get; init; }
     public string Description { get; init; }

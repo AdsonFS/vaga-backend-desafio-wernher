@@ -1,6 +1,5 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Wernher.API.DTO;
 using Wernher.Domain.Models;
 using Wernher.Domain.Repositories;
 
@@ -22,14 +21,13 @@ public class DeviceController : ControllerBase
         return Ok(await _deviceRepository.GetAllAsync());
     }
     [HttpPost]
-    public async Task<ActionResult<Device>> PostDevice(DeviceDto device, [FromServices] IValidator<DeviceDto> validator)
+    public async Task<ActionResult<Device>> PostDevice(Device device, [FromServices] IValidator<Device> validator)
     {
         var validationResult = await validator.ValidateAsync(device);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
-        Guid id = (await _deviceRepository.AddAsync(device.ToModel())).Id;
 
-
+        Guid id = (await _deviceRepository.AddAsync(device)).Id;
         return CreatedAtAction(nameof(GetDevice), new { id }, device);
 
     }
@@ -44,10 +42,17 @@ public class DeviceController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutDevice(Guid id, [FromBody] DeviceDto deviceDto, [FromServices] IValidator<DeviceDto> validator)
+    public async Task<IActionResult> PutDevice(Guid id, [FromBody] Device newDevice, [FromServices] IValidator<Device> validator)
     {
+        var validationResult = await validator.ValidateAsync(newDevice);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
 
-        return NoContent();
+        var device = await _deviceRepository.GetByIdAsync(id);
+        if (device == null) return BadRequest();
+
+        await _deviceRepository.UpdateAsync(device, newDevice);
+        return Ok();
     }
 
     [HttpDelete("{id}")]
@@ -55,6 +60,7 @@ public class DeviceController : ControllerBase
     {
         var device = await _deviceRepository.GetByIdAsync(id);
         if (device == null) return BadRequest();
+
         await _deviceRepository.DeleteAsync(device);
         return Ok();
     }
