@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,7 +20,7 @@ public static class ConfigureApi
     static private void AddSwaggerDoc(this IServiceCollection services)
         => services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v2", new OpenApiInfo { Title = "Wernher API Desafio Backend", Version = "v2" });
+                c.SwaggerDoc("v2", new OpenApiInfo { Title = "Wernher API Desafio Backend", Version = "v1" });
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
                     Scheme = "bearer",
@@ -35,6 +36,10 @@ public static class ConfigureApi
                         Type = ReferenceType.SecurityScheme
                     }
                 };
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+
                 c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                     {{ jwtSecurityScheme, Array.Empty<string>() }});
@@ -87,7 +92,7 @@ public static class ConfigureApi
     public static WebApplication ConfigureApp(this WebApplication app)
     {
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v2/swagger.json", "Adson API V1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v2/swagger.json", "Wernher API V1"));
         app.UseStaticFiles();
 
         app.UseRouting();
