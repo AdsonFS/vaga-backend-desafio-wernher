@@ -8,7 +8,6 @@ public class Client : IDisposable
     private readonly NetworkStream _networkStream;
     private readonly StreamReader _streamReader;
     private readonly StreamWriter _streamWriter;
-
     public Client(string host)
     {
         var hostParts = host.Split(':');
@@ -22,21 +21,16 @@ public class Client : IDisposable
         _streamReader = new StreamReader(_networkStream);
         _streamWriter = new StreamWriter(_networkStream) { AutoFlush = true };
     }
-
-    public async Task<string> GetData(string command)
+    public async Task<string> GetDataAsync(string command)
     {
-        // clean buffer before sending command
-        await _streamWriter.WriteLineAsync(command);
+        // discart the initial message if there is any
         await _streamReader.ReadLineAsync();
 
-        // send command
         await _streamWriter.WriteLineAsync(command);
-        var response = await _streamReader.ReadLineAsync();
-
-        return response;
+        return await _streamReader.ReadLineAsync();
     }
 
-    public async Task CloseTelnet()
+    public async Task CloseTelnetAsync()
     {
         await _streamWriter.WriteLineAsync("quit\r\n");
         Dispose();
