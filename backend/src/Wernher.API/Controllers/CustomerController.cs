@@ -22,15 +22,28 @@ public class CustomerController : ControllerBase
         _validator = validator;
     }
 
+    /// <summary>
+    /// Get a customer by id.
+    /// </summary>
+    /// <response code="200">Ok</response>
+    /// <response code="404">Customer Not Found</response>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id}")]
-    public async Task<ActionResult<Customer>> GetCustomer(Guid id)
+    public async Task<ActionResult<CustomerResponse>> GetCustomer(Guid id)
     {
         var customer = await _customerRepository.GetByIdAsync(id);
         if (customer == null) return NotFound();
-        return Ok(customer);
+        return Ok(new CustomerResponse(customer.Email, customer.Name));
     }
 
-
+    /// <summary>
+    /// Create a new customer.
+    /// </summary>
+    /// <response code="201">Device Created</response>
+    /// <response code="400">Bad Request - Email already in use</response>
+    /// <param name="customer"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
     {
@@ -44,8 +57,16 @@ public class CustomerController : ControllerBase
         return CreatedAtAction(nameof(GetCustomer), new { id }, customer);
     }
 
+
+    /// <summary>
+    /// Login a customer.
+    /// </summary>
+    /// <response code="200">Ok</response>
+    /// <response code="400">Bad Request - Email or Password incorrect</response>
+    /// <param name="login"></param>
+    /// <returns></returns>
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login([FromBody] Login login)
+    public async Task<ActionResult> Login([FromBody] Login login)
     {
         var customer = await _customerRepository.GetByEmailAsync(login.Email);
         if (customer == null) return BadRequest();

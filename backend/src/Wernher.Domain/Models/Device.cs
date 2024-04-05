@@ -12,7 +12,7 @@ public class Device : Entity
         Commands = commands;
     }
     private Device() { }
-    public override Guid Id { get; protected set; }
+    public string Identifier { get => Id.ToString(); }
     [JsonIgnore]
     public Guid CustomerId { get; set; }
     public string Description { get; private set; }

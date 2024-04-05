@@ -13,6 +13,8 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.Property(d => d.Manufacturer).IsRequired().HasMaxLength(50);
         builder.Property(d => d.Url).IsRequired().HasMaxLength(100);
 
+        builder.Ignore(d => d.Identifier);
+
         builder.HasMany(d => d.Commands)
             .WithOne()
             .HasForeignKey(c => c.DeviceID)
