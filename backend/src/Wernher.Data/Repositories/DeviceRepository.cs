@@ -26,7 +26,7 @@ public class DeviceRepository : Repository<Device>, IDeviceRepository
     public override async Task<Device> UpdateAsync(Device oldEntity, Device newEntity)
     {
         _dbSet.Remove(oldEntity);
-        oldEntity.Update(newEntity.Identifier, newEntity.Description, newEntity.Manufacturer, newEntity.Url, newEntity.Commands);
+        oldEntity.Update(newEntity.Description, newEntity.Manufacturer, newEntity.Url, newEntity.Commands);
         _dbSet.Update(oldEntity);
         await SaveChanges();
         return newEntity;

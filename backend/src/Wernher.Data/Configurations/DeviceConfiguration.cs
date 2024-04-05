@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Wernher.Domain.Models;
 
 namespace Wernher.Data.Configurations;
+
 public class DeviceConfiguration : IEntityTypeConfiguration<Device>
 {
     public void Configure(EntityTypeBuilder<Device> builder)
     {
         builder.HasKey(d => d.Id);
-        builder.Property(d => d.Identifier).IsRequired().HasMaxLength(50);
         builder.Property(d => d.Description).IsRequired().HasMaxLength(100);
         builder.Property(d => d.Manufacturer).IsRequired().HasMaxLength(50);
         builder.Property(d => d.Url).IsRequired().HasMaxLength(100);
