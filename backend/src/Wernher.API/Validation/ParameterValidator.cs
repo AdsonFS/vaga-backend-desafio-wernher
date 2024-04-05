@@ -1,8 +1,8 @@
 using FluentValidation;
-using Wernher.API.DTO;
+using Wernher.Domain.Models;
 
 namespace Wernher.API.Validation;
-public class ParameterValidator : AbstractValidator<ParameterDto>
+public class ParameterValidator : AbstractValidator<Parameter>
 {
     public ParameterValidator()
     {
