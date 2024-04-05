@@ -13,10 +13,12 @@ public class Client : IDisposable
         var hostParts = host.Split(':');
         var Host = hostParts[0];
 
-        var Port = hostParts.Length == 2 ? int.Parse(hostParts[1]) : 2023;
+        var Port = hostParts.Length == 2 ? int.Parse(hostParts[1]) : 23;
         System.Console.WriteLine($"Connecting to {Host}:{Port}");
 
         _tcpClient = new TcpClient(Host, Port);
+
+
         _networkStream = _tcpClient.GetStream();
         _streamReader = new StreamReader(_networkStream);
         _streamWriter = new StreamWriter(_networkStream) { AutoFlush = true };

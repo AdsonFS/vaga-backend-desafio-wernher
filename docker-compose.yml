@@ -1,6 +1,19 @@
 version: "3"
 
 services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.25.4
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx/config/:/etc/nginx/
+      - ./nginx/cache/:/data/nginx/cache/
+      # - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - wernher-network
+    restart: unless-stopped
+
   db:
     container_name: db
     image: postgres:16.2
@@ -10,11 +23,45 @@ services:
       - POSTGRES_DB=WernherDB
     ports:
       - 5432:5432
-    #volumes:
-    #  - ./db/data:/var/lib/postgresql/data
+    # volumes:
+    #   - ./db/data:/var/lib/postgresql/data
     networks:
       - wernher-network
     restart: unless-stopped
+
+  api:
+    container_name: api
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    networks:
+      - wernher-network
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  telnet:
+    container_name: telnet
+    build:
+      context: go_telnet/
+      dockerfile: Dockerfile
+    networks:
+      - wernher-network
+    restart: unless-stopped
+    ports:
+      - 2023:23
+    depends_on:
+      - db
+
+  migrations:
+    container_name: migrations
+    build:
+      context: backend/
+      dockerfile: DockerfileMigration
+    networks:
+      - wernher-network
+    depends_on:
+      - db
 
 networks:
   wernher-network:
