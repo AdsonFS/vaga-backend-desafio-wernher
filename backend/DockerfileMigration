@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+# Install EF Core
+RUN dotnet tool install --global dotnet-ef --version 8.*
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy and restore all the dependencies 
+WORKDIR /app
+
+COPY src/ src/
+WORKDIR /app/src/Wernher.API/
+RUN dotnet restore
+
+WORKDIR /app/
+COPY entrypoint-migration.sh ./
+RUN chmod +x entrypoint-migration.sh
+
+ENTRYPOINT ["./entrypoint-migration.sh"]

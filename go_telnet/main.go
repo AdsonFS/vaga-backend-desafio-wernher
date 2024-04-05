@@ -10,15 +10,15 @@ import (
 )
 
 func main() {
-	// Start listening on port 2023
-	ln, err := net.Listen("tcp", ":2023")
+	// Start listening on port 23 (default telnet port)
+	ln, err := net.Listen("tcp", ":23")
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		return
 	}
 	defer ln.Close()
 
-	fmt.Println("Telnet server started, listening on port 2023")
+	fmt.Println("Telnet server started, listening on port 23")
 
 	for {
 		conn, err := ln.Accept()

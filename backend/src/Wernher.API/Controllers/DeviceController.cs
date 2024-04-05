@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Wernher.API.DTO;
 using Wernher.Domain.Models;
 using Wernher.Domain.Repositories;
@@ -36,22 +37,30 @@ public class DeviceController : ControllerBase
         var devices = await _deviceRepository.GetAllAsync();
         await Task.WhenAll(devices.Select(async device =>
         {
-            using var client = new Client(device.Url);
-            var command = "get_rainfall_intensity";
-
-            var telnetCommand = device.Commands
-                .First(c => c.TelnetCommand.Command == command)
-                .TelnetCommand;
-
-            foreach (var parameter in telnetCommand.Parameters)
+            try
             {
-                var data = await client.GetDataAsync($"{telnetCommand.GetCommandWithParameter(parameter)}");
 
-                // filter only the float number
-                data = new string(data.Where(c => char.IsDigit(c) || c == '.').ToArray());
-                result.Add(new TelnetDataResponse(device.Url, command, parameter.Name, data));
+                using var client = new Client(device.Url);
+                var command = "get_rainfall_intensity";
+
+                var telnetCommand = device.Commands
+                    .First(c => c.TelnetCommand.Command == command)
+                    .TelnetCommand;
+
+                foreach (var parameter in telnetCommand.Parameters)
+                {
+                    var data = await client.GetDataAsync($"{telnetCommand.GetCommandWithParameter(parameter)}");
+
+                    // filter only the float number
+                    data = new string(data.Where(c => char.IsDigit(c) || c == '.').ToArray());
+                    result.Add(new TelnetDataResponse(device.Url, command, parameter.Name, data));
+                }
+                await client.CloseTelnetAsync();
             }
-            await client.CloseTelnetAsync();
+            catch (Exception)
+            {
+                result.Add(new TelnetDataResponse(device.Url, "Error", "Error", "Connection Error"));
+            }
         }));
         return Ok(result);
     }
