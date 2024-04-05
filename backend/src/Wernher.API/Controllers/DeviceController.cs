@@ -1,18 +1,57 @@
+using System.Runtime.CompilerServices;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Wernher.API.ResponseDTO;
 using Wernher.Domain.Models;
 using Wernher.Domain.Repositories;
+using Wernher.Domain.Telnet;
 
 namespace Wernher.API.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class DeviceController : ControllerBase
 {
-    private IRepository<Device> _deviceRepository;
+    private IDeviceRepository _deviceRepository;
 
-    public DeviceController(IRepository<Device> deviceRepository)
+    public DeviceController(IDeviceRepository deviceRepository)
     {
         _deviceRepository = deviceRepository;
+    }
+
+    [HttpGet("telnet/get_rainfall_intensity")]
+    public async Task<ActionResult> Telnet()
+    {
+        List<TelnetDataResponse> result = new();
+        var devices = await _deviceRepository.GetAllAsync();
+        foreach (var device in devices)
+        {
+            using var client = new Client(device.Url);
+            var command = "get_rainfall_intensity";
+
+            var parameters = device.Commands
+                .First(c => c.TelnetCommand.Command == command)
+                .TelnetCommand.Parameters;
+
+
+            foreach (var parameter in parameters)
+            {
+                System.Console.WriteLine("URL: " + device.Url + " Command: " + command + " Parameter: " + parameter.Name);
+
+                var telnetCommand = command;
+                if (parameter.Name != String.Empty) telnetCommand = $"{command} {parameter.Name}";
+
+                var data = await client.GetData($"{telnetCommand}\r\n");
+
+                // filter only the float number
+                data = new string(data.Where(c => char.IsDigit(c) || c == '.').ToArray());
+                // save the data to the database
+                System.Console.WriteLine(data);
+                result.Add(new TelnetDataResponse(device.Url, command, parameter.Name, data));
+
+            }
+            client.CloseTelnet();
+        }
+        return Ok(result);
     }
 
     [HttpGet]
@@ -26,7 +65,6 @@ public class DeviceController : ControllerBase
         var validationResult = await validator.ValidateAsync(device);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
-
         Guid id = (await _deviceRepository.AddAsync(device)).Id;
         return CreatedAtAction(nameof(GetDevice), new { id }, device);
 

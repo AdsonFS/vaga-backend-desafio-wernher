@@ -8,6 +8,5 @@ public class TelnetCommandValidator : AbstractValidator<TelnetCommand>
     {
         RuleFor(x => x.Command).NotEmpty();
         RuleFor(x => x.Parameters).NotEmpty();
-        RuleForEach(x => x.Parameters).SetValidator(new ParameterValidator());
     }
 }

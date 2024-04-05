@@ -23,7 +23,7 @@ public static class ConfigureApi
         services.AddSwaggerGen();
         services.AddControllers();
         services.AddScoped<IValidator<Device>, DeviceValidator>();
-        services.AddScoped<IRepository<Device>, DeviceRepository>();
+        services.AddScoped<IDeviceRepository, DeviceRepository>();
         return services;
     }
 
