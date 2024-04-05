@@ -69,7 +69,7 @@ func handleCommand(input string) string {
 			return "The rainfall intensity is: 0.0mm/hr\r\n"
 		}
 		if len(parts) == 2 {
-			return "The rainfall intensity is: -1.0mm/hr\r\n"
+			return "The rainfall intensity is: 1.0mm/hr\r\n"
 		}
 		return fmt.Sprintf("The rainfall intensity is: %fmm/hr\r\n", rand.Float64())
 	case "time":
@@ -77,7 +77,7 @@ func handleCommand(input string) string {
 	case "quit":
 		return "Goodbye!\r\n"
 	default:
-		return "Unknown command. Type 'hello' for a greeting, 'time' for current time, or 'quit' to exit.\r\n"
+		return "Unknown command. Type 'get_rainfall_intensity' for get data, 'time' for current time, or 'quit' to exit.\r\n"
 	}
 }
 

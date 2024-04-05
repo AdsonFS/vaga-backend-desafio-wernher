@@ -23,34 +23,25 @@ public class DeviceController : ControllerBase
     {
         List<TelnetDataResponse> result = new();
         var devices = await _deviceRepository.GetAllAsync();
-        foreach (var device in devices)
+        await Task.WhenAll(devices.Select(async device =>
         {
             using var client = new Client(device.Url);
             var command = "get_rainfall_intensity";
 
-            var parameters = device.Commands
+            var telnetCommand = device.Commands
                 .First(c => c.TelnetCommand.Command == command)
-                .TelnetCommand.Parameters;
+                .TelnetCommand;
 
-
-            foreach (var parameter in parameters)
+            foreach (var parameter in telnetCommand.Parameters)
             {
-                System.Console.WriteLine("URL: " + device.Url + " Command: " + command + " Parameter: " + parameter.Name);
-
-                var telnetCommand = command;
-                if (parameter.Name != String.Empty) telnetCommand = $"{command} {parameter.Name}";
-
-                var data = await client.GetData($"{telnetCommand}\r\n");
+                var data = await client.GetDataAsync($"{telnetCommand.GetCommandWithParameter(parameter)}");
 
                 // filter only the float number
                 data = new string(data.Where(c => char.IsDigit(c) || c == '.').ToArray());
-                // save the data to the database
-                System.Console.WriteLine(data);
                 result.Add(new TelnetDataResponse(device.Url, command, parameter.Name, data));
-
             }
-            client.CloseTelnet();
-        }
+            await client.CloseTelnetAsync();
+        }));
         return Ok(result);
     }
 

@@ -14,4 +14,7 @@ public class TelnetCommand : Entity
     public Guid CommandsID { get; }
     public string Command { get; }
     public List<Parameter> Parameters { get; }
+
+    public string GetCommandWithParameter(Parameter parameter)
+        => parameter.Name != String.Empty ? $"{Command} {parameter.Name}\r\n" : $"{Command}\r\n";
 }
