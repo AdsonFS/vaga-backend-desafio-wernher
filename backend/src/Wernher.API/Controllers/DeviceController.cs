@@ -135,6 +135,7 @@ public class DeviceController : ControllerBase
         if (device == null) return NotFound();
 
         if (device.CustomerId.ToString() != GetCustomerId()) return Unauthorized();
+        newDevice.CustomerId = device.CustomerId;
 
         await _deviceRepository.UpdateAsync(device, newDevice);
         return Ok(device);

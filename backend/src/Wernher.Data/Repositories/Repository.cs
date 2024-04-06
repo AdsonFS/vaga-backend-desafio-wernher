@@ -6,10 +6,10 @@ using Wernher.Domain.Repositories;
 namespace Wernher.Data.Repositories;
 public class Repository<TEntity> : IDisposable, IRepository<TEntity> where TEntity : Entity
 {
-    private readonly WernherContext _wernherContext;
+    private readonly DbContext _wernherContext;
     protected readonly DbSet<TEntity> _dbSet;
 
-    public Repository(WernherContext wernherContext)
+    public Repository(DbContext wernherContext)
     {
         _wernherContext = wernherContext;
         _dbSet = _wernherContext.Set<TEntity>();
@@ -20,9 +20,10 @@ public class Repository<TEntity> : IDisposable, IRepository<TEntity> where TEnti
         await SaveChanges();
         return entity;
     }
-    public virtual async Task<TEntity> UpdateAsync(TEntity oldEntity, TEntity newEntity)
+    public async Task<TEntity> UpdateAsync(TEntity oldEntity, TEntity newEntity)
     {
-        _dbSet.Update(newEntity);
+        _wernherContext.Entry(oldEntity).CurrentValues.SetValues(newEntity);
+        // _dbSet.Update(newEntity);
         await SaveChanges();
         return newEntity;
     }
