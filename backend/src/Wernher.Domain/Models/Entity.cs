@@ -4,5 +4,5 @@ namespace Wernher.Domain.Models;
 public abstract class Entity()
 {
     [JsonIgnore]
-    public virtual Guid Id { get; protected set; }
+    public virtual Guid Id { get; set; }
 }

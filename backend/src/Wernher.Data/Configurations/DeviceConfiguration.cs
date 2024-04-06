@@ -33,8 +33,6 @@ public class CommandDescriptionConfiguration : IEntityTypeConfiguration<Command>
         builder.Property(c => c.Result).IsRequired().HasMaxLength(100);
         builder.Property(c => c.Format).IsRequired().HasMaxLength(100);
 
-
-
         builder.HasOne(cd => cd.TelnetCommand)
             .WithOne()
             .HasForeignKey<TelnetCommand>(cd => cd.CommandsID)
@@ -49,6 +47,7 @@ public class TelnetCommandConfiguration : IEntityTypeConfiguration<TelnetCommand
     {
         builder.HasKey(tc => tc.Id);
         builder.Property(tc => tc.Command).IsRequired().HasMaxLength(50);
+        builder.HasIndex(tc => tc.Command);
 
         builder.HasMany(tc => tc.Parameters)
             .WithOne()
