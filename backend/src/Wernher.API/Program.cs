@@ -5,6 +5,6 @@ builder.Services.ConfigureServices(builder.Configuration);
 builder.AddSerilogApi(builder.Configuration);
 
 var app = builder.Build();
-app.ConfigureApp();
+app.ConfigureApp(builder.Configuration);
 
 app.Run();

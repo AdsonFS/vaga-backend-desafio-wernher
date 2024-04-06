@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using Elastic.Apm.NetCoreAll;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -89,12 +90,13 @@ public static class ConfigureApi
         return services;
     }
 
-    public static WebApplication ConfigureApp(this WebApplication app)
+    public static WebApplication ConfigureApp(this WebApplication app, IConfiguration configuration)
     {
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v2/swagger.json", "Wernher API V1"));
         app.UseStaticFiles();
 
+        app.UseAllElasticApm(configuration);
         app.UseRouting();
         // app.UseHttpsRedirection();
 

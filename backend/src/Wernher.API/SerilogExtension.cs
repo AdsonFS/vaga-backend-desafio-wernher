@@ -1,7 +1,10 @@
+using System.Reflection;
+using Elastic.Apm.SerilogEnricher;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Filters;
+using Serilog.Sinks.Elasticsearch;
 
 namespace Wernher.API;
 
@@ -18,10 +21,17 @@ public static class SerilogExtension
             .Enrich.FromLogContext()
             .Enrich.WithExceptionDetails()
             .Enrich.WithProperty("ApplicationName", "Wernher API")
-            .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] [{SourceContext}] -> {Message:lj}{NewLine}{Exception}")
+            .Enrich.WithElasticApmCorrelationInfo()
+            .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+            {
+                AutoRegisterTemplate = true,
+                IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name!.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+            })
+
+            .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} {ElasticApmTraceId} {ElasticApmTransactionId} {ElasticApmSpanId} [{Level:u3}] [{SourceContext}] -> {Message:lj}{NewLine}{Exception}")
             .WriteTo.File(
                 path: $"logs/wernher api_",
-                outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] [{SourceContext}] -> {Message:lj}{NewLine}{Exception}",
+                outputTemplate: "{Timestamp:HH:mm:ss} {ElasticApmTraceId} {ElasticApmTransactionId} {ElasticApmSpanId} [{Level:u3}] [{SourceContext}] -> {Message:lj}{NewLine}{Exception}",
                 rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
