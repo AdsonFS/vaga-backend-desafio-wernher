@@ -297,5 +297,6 @@ go.work
 # End of https://www.toptal.com/developers/gitignore/api/aspnetcore,go
 Migrations/
 nginx/cache/*
-backend/src/Wernher.API/logs/*
-logs/.*
+backend/src/Wernher.API/logs/
+logs/
+elasticsearch_data/

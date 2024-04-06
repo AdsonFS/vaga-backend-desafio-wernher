@@ -22,11 +22,23 @@ services:
       - POSTGRES_DB=WernherDB
     ports:
       - 5432:5432
+    expose:
+      - 5432
     # volumes:
     #   - ./db/data:/var/lib/postgresql/data
     networks:
       - wernher-network
     restart: unless-stopped
+
+  migrations:
+    container_name: migrations
+    build:
+      context: backend/
+      dockerfile: DockerfileMigration
+    networks:
+      - wernher-network
+    depends_on:
+      - db
 
   api:
     container_name: api
@@ -40,9 +52,10 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+      - apm
 
-  telnet:
-    container_name: telnet
+  telnet1:
+    container_name: telnet1
     build:
       context: go_telnet/
       dockerfile: Dockerfile
@@ -54,15 +67,100 @@ services:
     depends_on:
       - db
 
-  migrations:
-    container_name: migrations
+  telnet2:
+    container_name: telnet2
     build:
-      context: backend/
-      dockerfile: DockerfileMigration
+      context: go_telnet/
+      dockerfile: Dockerfile
     networks:
       - wernher-network
+    restart: unless-stopped
+    ports:
+      - 2024:23
     depends_on:
       - db
+
+  telnet3:
+    container_name: telnet3
+    build:
+      context: go_telnet/
+      dockerfile: Dockerfile
+    networks:
+      - wernher-network
+    restart: unless-stopped
+    ports:
+      - 2025:23
+    depends_on:
+      - db
+
+  # Observability tools
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.1
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    # volumes:
+    #   - ./elasticsearch_data:/var/lib/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - wernher-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.0
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    networks:
+      - wernher-network
+
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:7.13.0
+    container_name: metricbeat
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./beats/metric/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+    restart: on-failure
+    networks:
+      - wernher-network
+
+  heartbeat:
+    image: docker.elastic.co/beats/heartbeat:7.13.0
+    container_name: heartbeat
+    entrypoint: "heartbeat -e -strict.perms=false"
+    user: root
+    volumes:
+      - ./beats/heartbeat/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
+    environment:
+      - setup.kibana.host=kibana:5601
+    networks:
+      - wernher-network
+
+  apm:
+    image: docker.elastic.co/apm/apm-server-oss:7.17.14
+    container_name: apm
+    user: root
+    volumes:
+      - ./apm/apm-server.yml:/usr/share/apm-server/new/apm-server.yml
+    ports:
+      - "8200:8200"
+    restart: on-failure
+    networks:
+      - wernher-network
 
 networks:
   wernher-network:
