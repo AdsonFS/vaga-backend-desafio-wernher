@@ -39,7 +39,6 @@ public class DeviceController : ControllerBase
         {
             try
             {
-
                 using var client = new Client(device.Url);
                 var command = "get_rainfall_intensity";
 
