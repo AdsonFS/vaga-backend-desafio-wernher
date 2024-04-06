@@ -1,0 +1,9 @@
+23:58:28 [WRN] [Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository] -> Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed. For more information go to https://aka.ms/aspnet/dataprotectionwarning
+23:58:28 [INF] [Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager] -> User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+23:58:28 [INF] [Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager] -> Creating key {a652e9d3-7d83-41b2-9f38-bcf7ebbdc07c} with creation date 2024-04-05 23:58:28Z, activation date 2024-04-05 23:58:28Z, and expiration date 2024-07-04 23:58:28Z.
+23:58:28 [WRN] [Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager] -> No XML encryptor configured. Key {a652e9d3-7d83-41b2-9f38-bcf7ebbdc07c} may be persisted to storage in unencrypted form.
+23:58:28 [INF] [Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository] -> Writing data to file '/root/.aspnet/DataProtection-Keys/key-a652e9d3-7d83-41b2-9f38-bcf7ebbdc07c.xml'.
+23:58:28 [INF] [Microsoft.Hosting.Lifetime] -> Now listening on: http://[::]:8080
+23:58:28 [INF] [Microsoft.Hosting.Lifetime] -> Application started. Press Ctrl+C to shut down.
+23:58:28 [INF] [Microsoft.Hosting.Lifetime] -> Hosting environment: Production
+23:58:28 [INF] [Microsoft.Hosting.Lifetime] -> Content root path: /app
