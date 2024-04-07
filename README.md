@@ -43,20 +43,27 @@ Acesse o [Kibana](http://localhost:5601/app/home#/) para monitorar.
 
 * Não usei o padrão complete Service + Repository porque por enquanto não havia necessidade, então faço uso somente do Repository.
 
+* É preferivel usar o protocolo MQTT em vez de telnet, usando o padrão PUB/SUB é possivel receber dados de todos os aparelhos conectados em tempo real, com uma performance maior, já que não é viavel manter a conexões telnet sempre aberta para todos os aparelhos, isso consumiria muito recurso.
+
 
 ## Tecnologias
 
 AspNet 8, Go, Nginx, Docker, Docker Compose, ElasticStack (apm, log, metric, health)
 
 ## Telas
-Metricas sobre status code, perfrmance e uso geral.
+#### Metricas sobre status code, perfrmance e uso geral:
 ![APM Trace](./img/apm_trace.png)
 
-Trace de cada requisição
+#### Trace de cada requisição:
 ![APM Span](./img/apm_span.png)
 
-Uptime
+#### Metricas dos serviços:
+![APM Span](./img/metric.png)
+
+#### Uptime:
 ![APM Span](./img/uptime.png)
 
-Swagger
+
+#### Swagger:
 ![APM Span](./img/swagger.png)
+
